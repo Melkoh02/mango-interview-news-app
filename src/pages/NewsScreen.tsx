@@ -4,6 +4,9 @@ import {ActivityIndicator, Text} from 'react-native-paper';
 import useApi from '../lib/hooks/useApi.ts';
 import NewsCard from '../components/newsCard.tsx';
 import {Article} from '../lib/types/article.ts';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import { Routes, type RootStackParamList } from '../lib/types/navigation.ts';
 
 const NEWS_PAGE_SIZE = 20;
 const NEWS_SOURCES = [
@@ -18,6 +21,8 @@ const NEWS_SOURCES = [
 
 export default function NewsScreen() {
   const api = useApi();
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList, Routes.News>>();
 
   const [data, setData] = useState<Article[]>([]);
   const [page, setPage] = useState(1);
@@ -53,7 +58,6 @@ export default function NewsScreen() {
 
   const fetchPage = useCallback(
     ({ pageToLoad, append }: { pageToLoad: number; append: boolean }) => {
-      console.log("API Called!!!")
       const isAppend = append;
       isAppend ? setLoadingMore(true) : setInitialLoading(true);
 
@@ -69,8 +73,6 @@ export default function NewsScreen() {
         .handle({
           onSuccess: res => {
             if (rid !== requestIdRef.current) return;
-
-            console.log('News API Called! page=', pageToLoad);
             setTotalResults(res.totalResults ?? null);
             setData(prev =>
               isAppend ? mergeUnique(prev, res.articles) : res.articles,
@@ -127,7 +129,7 @@ export default function NewsScreen() {
                 sourceName={item.source?.name}
                 publishedAt={item.publishedAt}
                 onPress={() => {
-                  console.log("Card pressed!")
+                  navigation.navigate(Routes.NewsDetail, { article: item });
                 }}
               />
             )}
