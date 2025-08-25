@@ -6,9 +6,12 @@ const client = axios.create({
   baseURL: Config.API_BASE_URL,
 });
 
+console.log("API_BASE_URL", Config.API_BASE_URL)
+console.log("API_KEY", Config.API_KEY)
+
 client.interceptors.request.use(
   config => {
-    const token = Config.API_TOKEN;
+    const token = Config.API_KEY;
     if (token) {
       const headers = new AxiosHeaders(config.headers);
       headers.set('x-api-key', `${token}`);
